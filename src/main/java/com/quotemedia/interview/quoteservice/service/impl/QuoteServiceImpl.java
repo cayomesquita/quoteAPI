@@ -6,6 +6,9 @@ import com.quotemedia.interview.quoteservice.service.QuoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
+
 /**
  * The Quote service implementation.
  */
@@ -18,6 +21,13 @@ public class QuoteServiceImpl implements QuoteService {
     @Override
     public Quote getLastestBySymbolName(String symbolName) {
         return quoteRepository.findFirstBySymbolOrderByDayDesc(symbolName);
+    }
+
+    @Override
+    public String getSymbolHighestAskByDay(LocalDate day) {
+        Date date = Date.valueOf(day);
+        Quote quote = quoteRepository.findFirstByDayOrderByAskDesc(date);
+        return (quote == null) ? null : quote.getSymbol();
     }
 
 }

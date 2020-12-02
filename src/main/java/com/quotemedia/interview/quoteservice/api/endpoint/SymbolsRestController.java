@@ -1,14 +1,16 @@
 package com.quotemedia.interview.quoteservice.api.endpoint;
 
 import com.quotemedia.interview.quoteservice.api.hateoas.QuoteRepresentationModel;
+import com.quotemedia.interview.quoteservice.api.hateoas.SymbolRepresentationModel;
 import com.quotemedia.interview.quoteservice.model.Quote;
 import com.quotemedia.interview.quoteservice.service.QuoteService;
+import com.quotemedia.interview.quoteservice.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * Symbols API Rest controller.
@@ -23,6 +25,7 @@ public class SymbolsRestController {
     /**
      * Get lastest quote by symbol.
      *
+     * @param symbolName the symbol name
      * @return the response entity
      */
     @GetMapping("/{symbol}/quotes/lastest")
@@ -36,4 +39,25 @@ public class SymbolsRestController {
         }
         return ResponseEntity.ok(QuoteRepresentationModel.toModel(quote));
     }
+
+    /**
+     * Gets symbol with highest ask.
+     *
+     * @param dayStr the day str
+     * @return the highest ask
+     */
+    @GetMapping("/highestAsk")
+    public ResponseEntity getHighestAsk(@RequestParam("day") String dayStr){
+        Optional<LocalDate> day = DateUtils.parseLocalDate(dayStr);
+        if (!day.isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
+        String symbol = quoteService.getSymbolHighestAskByDay(day.get());
+        if (symbol == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(SymbolRepresentationModel.toModel(symbol));
+    }
+
+
 }

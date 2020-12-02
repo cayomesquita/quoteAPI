@@ -8,37 +8,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * The type Quote representation model.
+ * The type Symbol representation model.
  */
-public class QuoteRepresentationModel extends RepresentationModel {
+public class SymbolRepresentationModel extends RepresentationModel {
 
     /**
-     * The Bid.
+     * The Symbol.
      */
-    public String bid;
-
-    /**
-     * The Ask.
-     */
-    public String ask;
+    public String symbol;
 
     /**
      * To model representation model.
      *
-     * @param quote the quote
+     * @param symbol the symbol
      * @return the representation model
      */
-    public static RepresentationModel toModel(Quote quote){
-        QuoteRepresentationModel model = new QuoteRepresentationModel();
-        model.ask = String.format("%.2f", quote.getAsk());
-        model.bid = String.format("%.2f", quote.getBid());
+    public static RepresentationModel toModel(String symbol){
+        SymbolRepresentationModel model = new SymbolRepresentationModel();
+        model.symbol = symbol;
         return model.add(linkTo(methodOn(SymbolsRestController.class).getLastestQuote("{symbolName}"))
                 .withRel("Quotes")
                 .withName("Lastest quote by symbol")
                 .withType("GET")
         ,linkTo(methodOn(SymbolsRestController.class).getHighestAsk("{day}"))
-                .withRel("Symbols")
-                .withName("Symbol with Highest ask on the day")
-                .withType("GET"));
+                        .withRel("Symbols")
+                        .withName("Symbol with Highest ask on the day")
+                        .withType("GET"));
     }
 }

@@ -93,4 +93,41 @@ class SymbolsRestControllerTest {
 
         Mockito.verify(quoteService, Mockito.only()).getLastestBySymbolName(ArgumentMatchers.anyString());
     }
+
+    @Test
+    void getHighestAsk() throws Exception {
+        String symbol = "AAAA";
+
+        Mockito.when(quoteService.getSymbolHighestAskByDay(ArgumentMatchers.any(LocalDate.class))).thenReturn(symbol);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/symbols/highestAsk?day=01-03-2020"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.symbol", Matchers.is(symbol)));
+
+        Mockito.verify(quoteService, Mockito.atLeastOnce()).getSymbolHighestAskByDay(ArgumentMatchers.any(LocalDate.class));
+    }
+
+    @Test
+    void getHighestAskNoResult() throws Exception {
+        Mockito.when(quoteService.getSymbolHighestAskByDay(ArgumentMatchers.any(LocalDate.class))).thenReturn(null);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/symbols/highestAsk?day=01-03-2020"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        Mockito.verify(quoteService, Mockito.atLeastOnce()).getSymbolHighestAskByDay(ArgumentMatchers.any(LocalDate.class));
+    }
+
+    @Test
+    void getHighestAskDateBadFormat() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/api/symbols/highestAsk"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mvc.perform(MockMvcRequestBuilders.get("/api/symbols/highestAsk?day=00-03-2020"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mvc.perform(MockMvcRequestBuilders.get("/api/symbols/highestAsk?day=13-03-2020"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mvc.perform(MockMvcRequestBuilders.get("/api/symbols/highestAsk?day="))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        Mockito.verify(quoteService, Mockito.never()).getSymbolHighestAskByDay(ArgumentMatchers.any(LocalDate.class));
+    }
 }
