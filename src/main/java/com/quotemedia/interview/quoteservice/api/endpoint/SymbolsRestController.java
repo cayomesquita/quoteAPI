@@ -5,6 +5,12 @@ import com.quotemedia.interview.quoteservice.api.hateoas.SymbolRepresentationMod
 import com.quotemedia.interview.quoteservice.model.Quote;
 import com.quotemedia.interview.quoteservice.service.QuoteService;
 import com.quotemedia.interview.quoteservice.utils.DateUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.links.Link;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +35,12 @@ public class SymbolsRestController {
      * @return the response entity
      */
     @GetMapping("/{symbol}/quotes/lastest")
+    @Operation(summary = "Get lastest quote by symbol")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lastest quote", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = QuoteRepresentationModel.class))})
+            ,@ApiResponse(responseCode = "404", description = "Symbol not found", content = @Content)
+            ,@ApiResponse(responseCode = "400", description = "Symbol invalid", content = @Content)
+    })
     public ResponseEntity getLastestQuote(@PathVariable("symbol")String symbolName){
         if (symbolName == null || symbolName.length() < 2 || symbolName.length() > 6){
             return ResponseEntity.badRequest().build();
@@ -47,6 +59,12 @@ public class SymbolsRestController {
      * @return the highest ask
      */
     @GetMapping("/highestAsk")
+    @Operation(summary = "Get symbol with highest ask on date")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Symbol", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = SymbolRepresentationModel.class))})
+            ,@ApiResponse(responseCode = "404", description = "No quote found this date", content = @Content)
+            ,@ApiResponse(responseCode = "400", description = "Date invalid", content = @Content)
+    })
     public ResponseEntity getHighestAsk(@RequestParam("day") String dayStr){
         Optional<LocalDate> day = DateUtils.parseLocalDate(dayStr);
         if (!day.isPresent()){
