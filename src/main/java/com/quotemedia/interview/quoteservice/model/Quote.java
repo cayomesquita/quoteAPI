@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
@@ -11,7 +12,7 @@ import java.sql.Date;
  */
 @Entity(name = "QUOTE")
 @IdClass(QuoteId.class)
-public class Quote {
+public class Quote implements Serializable {
 
     @Id
     private String symbol;
