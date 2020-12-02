@@ -6,6 +6,7 @@ import com.quotemedia.interview.quoteservice.model.Quote;
 import com.quotemedia.interview.quoteservice.service.QuoteService;
 import com.quotemedia.interview.quoteservice.utils.DateUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.links.Link;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +42,7 @@ public class SymbolsRestController {
             ,@ApiResponse(responseCode = "404", description = "Symbol not found", content = @Content)
             ,@ApiResponse(responseCode = "400", description = "Symbol invalid", content = @Content)
     })
-    public ResponseEntity getLastestQuote(@PathVariable("symbol")String symbolName){
+    public ResponseEntity getLastestQuote(@Parameter(description = "Symbol name") @PathVariable("symbol") String symbolName){
         if (symbolName == null || symbolName.length() < 2 || symbolName.length() > 6){
             return ResponseEntity.badRequest().build();
         }
@@ -65,7 +66,7 @@ public class SymbolsRestController {
             ,@ApiResponse(responseCode = "404", description = "No quote found this date", content = @Content)
             ,@ApiResponse(responseCode = "400", description = "Date invalid", content = @Content)
     })
-    public ResponseEntity getHighestAsk(@RequestParam("day") String dayStr){
+    public ResponseEntity getHighestAsk(@Parameter(description = "Date to search") @RequestParam("day") String dayStr){
         Optional<LocalDate> day = DateUtils.parseLocalDate(dayStr);
         if (!day.isPresent()){
             return ResponseEntity.badRequest().build();
